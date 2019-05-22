@@ -21,8 +21,11 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -88,6 +91,15 @@ public class PDFViewActivity extends AppCompatActivity implements OnPageChangeLi
         launchPicker();
     }
 
+    @Override
+    public void onCreate( Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        pdfView = findViewById(R.id.pdfView);
+        pickFile();
+//        displayFromAsset(SAMPLE_FILE);
+    }
+
     void launchPicker() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("application/pdf");
@@ -113,7 +125,7 @@ public class PDFViewActivity extends AppCompatActivity implements OnPageChangeLi
     private void displayFromAsset(String assetFileName) {
         pdfFileName = assetFileName;
 
-        pdfView.fromAsset(SAMPLE_FILE)
+        pdfView.fromAsset(pdfFileName)
                 .defaultPage(pageNumber)
                 .onPageChange(this)
                 .enableAnnotationRendering(true)
@@ -126,7 +138,6 @@ public class PDFViewActivity extends AppCompatActivity implements OnPageChangeLi
 
     private void displayFromUri(Uri uri) {
         pdfFileName = getFileName(uri);
-
         pdfView.fromUri(uri)
                 .defaultPage(pageNumber)
                 .onPageChange(this)
@@ -144,6 +155,12 @@ public class PDFViewActivity extends AppCompatActivity implements OnPageChangeLi
             uri = intent.getData();
             displayFromUri(uri);
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        onResult(resultCode,data);
     }
 
     @Override

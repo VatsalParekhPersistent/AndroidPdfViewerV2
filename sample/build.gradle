@@ -13,24 +13,40 @@ repositories {
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'android-apt'
+//apply plugin: 'android-apt'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.3"
+    compileSdkVersion 28
+    //buildToolsVersion "25.0.3"
 
     defaultConfig {
-        minSdkVersion 11
-        targetSdkVersion 25
+        minSdkVersion 21
+        targetSdkVersion 28
         versionCode 3
         versionName "2.0.0"
+        javaCompileOptions.annotationProcessorOptions.includeCompileClasspath true
     }
+    splits {
+        abi {
+            // Enable ABI split
+            enable true
 
+            // Clear list of ABIs
+            reset()
+
+            // Specify each architecture currently supported by the Video SDK
+            include "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+
+            // Specify that we do not want an additional universal SDK
+            universalApk false
+        }
+    }
 }
 
 dependencies {
-    compile project(':android-pdf-viewer')
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    provided 'org.androidannotations:androidannotations:4.0.0'
-    compile 'org.androidannotations:androidannotations-api:4.0.0'
+    implementation project(':android-pdf-viewer')
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.github.barteksc:pdfium-android:1.7.1'
+    //compileOnly 'org.androidannotations:androidannotations:4.0.0'
+    implementation 'org.androidannotations:androidannotations-api:4.0.0'
 }
