@@ -22,7 +22,6 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -47,6 +46,7 @@ import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.ViewById;
 
+import java.io.File;
 import java.util.List;
 
 @EActivity(R.layout.activity_main)
@@ -137,8 +137,10 @@ public class PDFViewActivity extends AppCompatActivity implements OnPageChangeLi
     }
 
     private void displayFromUri(Uri uri) {
-        pdfFileName = getFileName(uri);
-        pdfView.fromUri(uri)
+        File file = new File(getFilePathFromURI(uri));
+        Uri fileUri = Uri.fromFile(file);
+        pdfFileName = getFileName(fileUri);
+        pdfView.fromUri(fileUri)
                 .defaultPage(pageNumber)
                 .onPageChange(this)
                 .enableAnnotationRendering(true)
@@ -237,5 +239,15 @@ public class PDFViewActivity extends AppCompatActivity implements OnPageChangeLi
     @Override
     public void onPageError(int page, Throwable t) {
         Log.e(TAG, "Cannot load page " + page);
+    }
+
+    private String getFilePathFromURI(Uri uri) {
+        // /document/raw:/storage/emulated/0/Download/Alice_s_Adventures_in_Wonderland.epub
+        String path = uri.getPath();
+        String documentType = "/document/raw";
+        if (path != null && path.startsWith(documentType)) {
+            path = path.split(":")[1];
+        }
+        return path;
     }
 }
